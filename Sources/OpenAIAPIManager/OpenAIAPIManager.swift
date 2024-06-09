@@ -7,7 +7,7 @@ final public class OpenAIAPIManager {
     public static let shared = OpenAIAPIManager()
     
     private let systemMessage = NSMutableDictionary()
-    private var historyList = [NSDictionary]()
+    public  var historyList = [NSDictionary]()
     public  var apiKey: String = ""
     
     /// Initializes the OpenAIAPIManager.

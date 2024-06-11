@@ -50,8 +50,8 @@ final public class OpenAIAPIManager {
     ///   - model: The ChatGPT model to use for generating the response. Defaults is .gptThreePointFiveTurbo
     ///   - maxTokens: The maximum number of tokens in the generated response. Defaults to 500.
     ///   - completion: A closure to be called with the result of the request. The result is either a success containing the generated response string or a failure containing an error.
-    public func sendChatRequest(prompt: String, model: ChatGPTModels = .gptThreePointFiveTurbo, maxTokens: Int = 500, completion: @escaping (Result<[String], Error>) -> Void)  {
-        self.chatRequest(prompt: prompt, model: model, maxTokens: maxTokens, endPoint: .chat, completion: completion)
+    public func sendChatRequest(prompt: String, model: ChatGPTModels = .gptThreePointFiveTurbo, maxTokens: Int = 500, completion: @escaping (Result<[String], Error>) -> Void) -> URLSessionDataTask? {
+        return self.chatRequest(prompt: prompt, model: model, maxTokens: maxTokens, endPoint: .chat, completion: completion)
     }
     
     
@@ -269,7 +269,7 @@ final public class OpenAIAPIManager {
         }
     }
     
-    private func chatRequest(prompt: String, model: ChatGPTModels, maxTokens: Int, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<[String], Error>) -> Void)  {
+    private func chatRequest(prompt: String, model: ChatGPTModels, maxTokens: Int, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<[String], Error>) -> Void) -> URLSessionDataTask? {
         
         let messages = generateMessages(from: prompt)
         
@@ -282,10 +282,10 @@ final public class OpenAIAPIManager {
         let requestBuilder = DefaultRequestBuilder()
         guard let request = requestBuilder.buildRequest(params: parameters, endPoint: endPoint, apiKey: apiKey) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
@@ -740,9 +740,9 @@ final public class OpenAIAPIManager {
         self.historyList.append(assistantMessage)
     }
     
-    private func performDataTask(with request: URLRequest, completion: @escaping (Result<Data, Error>) -> Void) {
+    private func performDataTask(with request: URLRequest, completion: @escaping (Result<Data, Error>) -> Void) -> URLSessionDataTask? {
         
-        URLSession.shared.dataTask(with: request) { (data,response,error) in
+        let task:URLSessionDataTask = URLSession.shared.dataTask(with: request) { (data,response,error) in
             if let error = error {
                 completion(.failure(error))
                 return
@@ -752,7 +752,9 @@ final public class OpenAIAPIManager {
                 return
             }
             completion(.success(data))
-        }.resume()
+        }
+        task.resume()
+        return task
     }
     
 }

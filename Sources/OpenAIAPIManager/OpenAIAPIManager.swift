@@ -25,8 +25,8 @@ final public class OpenAIAPIManager {
     ///                 The result will either contain an array of models of type `ChatGPTModelList` on success,
     ///                 or an error on failure.
     ///
-    public func getOpenAIModels(completion: @escaping (Result<ChatGPTModelList, Error>) -> Void) {
-        self.getModelsList(endPoint: .modelsList, completion: completion)
+    public func getOpenAIModels(completion: @escaping (Result<ChatGPTModelList, Error>) -> Void) -> URLSessionDataTask? {
+        return self.getModelsList(endPoint: .modelsList, completion: completion)
     }
     
     
@@ -39,8 +39,8 @@ final public class OpenAIAPIManager {
     ///                 or an error on failure.
     ///
     
-    public func retrieveAIModel(model: String, completion: @escaping (Result<ChatGPTModel, Error>) -> Void) {
-        self.retrieveSingleModel(endPoint: .retrievedModel(model), completion: completion)
+    public func retrieveAIModel(model: String, completion: @escaping (Result<ChatGPTModel, Error>) -> Void) -> URLSessionDataTask? {
+        return self.retrieveSingleModel(endPoint: .retrievedModel(model), completion: completion)
     }
     
     /// Sends a chat request to the ChatGPT API.
@@ -63,8 +63,8 @@ final public class OpenAIAPIManager {
     ///   - maxTokens: The maximum number of tokens in the generated text. Defaults to 500.
     ///   - numberOfResponse: The number of text samples to generate. Defaults to 1.
     ///   - completion: A completion block that is called with the result of the request. The block receives a Result object containing either the generated text as a String in case of success, or an Error in case of failure.
-    public func sendTextRequest(prompt: String, model: ChatGPTModels = .textDavinci003, maxTokens: Int = 500, numberOfResponse: Int = 1, completion: @escaping (Result<[String], Error>) -> Void)  {
-        self.sendTextCompletionRequest(prompt: prompt, model: model, maxTokens: maxTokens, n: numberOfResponse, endPoint: .completion, completion: completion)
+    public func sendTextRequest(prompt: String, model: ChatGPTModels = .textDavinci003, maxTokens: Int = 500, numberOfResponse: Int = 1, completion: @escaping (Result<[String], Error>) -> Void) -> URLSessionDataTask? {
+        return self.sendTextCompletionRequest(prompt: prompt, model: model, maxTokens: maxTokens, n: numberOfResponse, endPoint: .completion, completion: completion)
     }
     
     /// Generates an image based on the prompt.
@@ -76,8 +76,8 @@ final public class OpenAIAPIManager {
     ///   - numberOfResponse: The number of images to generate (default is 1).
     ///   - user: (Optional) A unique identifier representing your end-user.
     ///   - completion: The completion block called with the result of the request. The block receives as Result object containing either the generated images Array as a String in case of success, or an Error in case of failure.
-    public func generateImage(prompt: String, imageSize: ChatGPTImageSize = .fiveTwelve, responseFormat: ResponseFormat = .url, numberOfResponse: Int = 1, user: String? = nil, completion: @escaping (Result<[String], Error>) -> Void)  {
-        self.generateImageFromText(prompt: prompt, imageSize: imageSize, responseFormat: responseFormat, endPoint: .generateImage, n: numberOfResponse,user: user, completion: completion)
+    public func generateImage(prompt: String, imageSize: ChatGPTImageSize = .fiveTwelve, responseFormat: ResponseFormat = .url, numberOfResponse: Int = 1, user: String? = nil, completion: @escaping (Result<[String], Error>) -> Void) -> URLSessionDataTask? {
+        return self.generateImageFromText(prompt: prompt, imageSize: imageSize, responseFormat: responseFormat, endPoint: .generateImage, n: numberOfResponse,user: user, completion: completion)
     }
     
     /// Edit an image based on the prompt.
@@ -92,9 +92,9 @@ final public class OpenAIAPIManager {
     ///    - user: A unique identifier representing your end-user, which can help OpenAI monitor and detect abuse.
     ///    - imageConversionFormat: (Optional) Convert invalid image type into open ai supported .rgba
     ///    - completion: The completion block called with the result of the request. The block receives as Result object containing either the generated images Array as a String in case of success, or an Error in case of failure.
-    public func createImageEditRequest(image: Data, mask: Data? = nil, prompt: String, n: Int = 1, size: ChatGPTImageSize = .fiveTwelve, responseFormat: ResponseFormat = .url, user: String? = nil, completion: @escaping (Result<[String],Error>) -> Void) {
+    public func createImageEditRequest(image: Data, mask: Data? = nil, prompt: String, n: Int = 1, size: ChatGPTImageSize = .fiveTwelve, responseFormat: ResponseFormat = .url, user: String? = nil, completion: @escaping (Result<[String],Error>) -> Void) -> URLSessionDataTask? {
         
-        self.editImageRequest(endPoint: .imageEdits, image: image, prompt: prompt, n: n, size: size, responseFormat: responseFormat, user: user, completion: completion)
+        return self.editImageRequest(endPoint: .imageEdits, image: image, prompt: prompt, n: n, size: size, responseFormat: responseFormat, user: user, completion: completion)
     }
     
     
@@ -109,9 +109,9 @@ final public class OpenAIAPIManager {
     ///    - user: A unique identifier representing your end-user, which can help OpenAI monitor and detect abuse.
     ///    - imageConversionFormat: (Optional) Convert invalid image type into open ai supported .rgba
     ///    - completion: The completion block called with the result of the request. The block receives as Result object containing either the generated images Array as a String in case of success, or an Error in case of failure.
-    public  func createImageVariationsRequest(image: Data, n: Int = 1, size: ChatGPTImageSize = .fiveTwelve, response_format: ResponseFormat = .url, user: String? = nil, completion: @escaping (Result<[String],Error>) -> Void) {
+    public  func createImageVariationsRequest(image: Data, n: Int = 1, size: ChatGPTImageSize = .fiveTwelve, response_format: ResponseFormat = .url, user: String? = nil, completion: @escaping (Result<[String],Error>) -> Void) -> URLSessionDataTask? {
         
-        self.imageVariationsRequest(endPoint:.imageVariations , image: image, n: n, size: size, responseFormat: response_format, user: user, completion: completion)
+        return self.imageVariationsRequest(endPoint:.imageVariations , image: image, n: n, size: size, responseFormat: response_format, user: user, completion: completion)
     }
     
     
@@ -125,8 +125,8 @@ final public class OpenAIAPIManager {
     ///   - model: (Optional) The model to be used for transcription. Defaults is .whisper1
     ///   - completion: A completion handler to be called with the result of the transcription request.
     ///                 The handler takes a Result object, which contains either the transcribed text or an error.
-    public func audioTranscriptionRequest(fileUrl: URL, prompt: String? = nil, temperature: Double? = nil, language: String? = nil, model: AudioGPTModels = .whisper1, completion: @escaping (Result<String, Error>) -> Void) {
-        self.audioTranscription(fileUrl: fileUrl, prompt: prompt, temperature: temperature, language: language, model: model, endPoint: .transcriptions, completion: completion)
+    public func audioTranscriptionRequest(fileUrl: URL, prompt: String? = nil, temperature: Double? = nil, language: String? = nil, model: AudioGPTModels = .whisper1, completion: @escaping (Result<String, Error>) -> Void) -> URLSessionDataTask? {
+        return self.audioTranscription(fileUrl: fileUrl, prompt: prompt, temperature: temperature, language: language, model: model, endPoint: .transcriptions, completion: completion)
     }
     
     /// Requests audio translation based on the provided parameters.
@@ -137,8 +137,8 @@ final public class OpenAIAPIManager {
     ///   - temperature: (Optional) The temperature value for generating diverse translations. Defaults to nil.
     ///   - model: The ChatGPT model to use for translation. Defaults is .whisper1
     ///   - completion: The completion block called with the result of the request. The block receives a Result object containing either the translated text as a String in case of success, or an Error in case of failure.
-    public func audioTranslationRequest(fileUrl: URL, prompt: String? = nil, temperature: Double? = nil, model: AudioGPTModels = .whisper1, completion: @escaping (Result<String, Error>) -> Void) {
-        self.audioTranslation(fileUrl: fileUrl,prompt: prompt, temperature: temperature, model: model, endPoint: .translations, completion: completion)
+    public func audioTranslationRequest(fileUrl: URL, prompt: String? = nil, temperature: Double? = nil, model: AudioGPTModels = .whisper1, completion: @escaping (Result<String, Error>) -> Void) -> URLSessionDataTask? {
+        return self.audioTranslation(fileUrl: fileUrl,prompt: prompt, temperature: temperature, model: model, endPoint: .translations, completion: completion)
     }
        
     ///  Endpoint for generating edits.
@@ -151,8 +151,8 @@ final public class OpenAIAPIManager {
     ///   - temperature: The sampling temperature to use, ranging from 0 to 2. Higher values like 0.8 make the output more random, while lower values like 0.2 make it more focused and deterministic. Optional parameter, defaults to 1.0.
     ///   - topP: An alternative to sampling with temperature, known as nucleus sampling. It considers the results of tokens with top_p probability mass. A value of 0.1 means only tokens comprising the top 10% probability mass are considered. Optional parameter, defaults to 1.0.
     ///   - completion: The completion block called with the result of the request. The block receives as Result object containing either the generated Array of Strings in case of success, or an Error in case of failure.
-    public func createEditsRequest(model: EditGPTModels = .textDavinciEdit001, input: String? = nil, instruction: String, n: Int = 1, temperature: Double = 1.0, topP: Double = 1.0, completion: @escaping (Result<[String],Error>) -> Void) {
-        self.textEditsRequest(endPoint: .textEdit, model: model, input: input, instruction: instruction, n: n, temperature: temperature, topP: topP, completion: completion)
+    public func createEditsRequest(model: EditGPTModels = .textDavinciEdit001, input: String? = nil, instruction: String, n: Int = 1, temperature: Double = 1.0, topP: Double = 1.0, completion: @escaping (Result<[String],Error>) -> Void) -> URLSessionDataTask? {
+        return self.textEditsRequest(endPoint: .textEdit, model: model, input: input, instruction: instruction, n: n, temperature: temperature, topP: topP, completion: completion)
     }
 
     /// Requests text moderations based on the provided parameters.
@@ -161,8 +161,8 @@ final public class OpenAIAPIManager {
     ///   - input: The input text to classify
     ///   - model: The ChatGPT model to use for moderations. Defaults is .textModerationStable
     ///   - completion: The completion block called with the result of the request. The block receives a Result object containing either the 'ModerationsModel'  in case of success, or an Error in case of failure.
-    public func moderationsRequest(input: String, model: ModerationGPTModels = .textModerationStable, completion: @escaping (Result<ModerationsModel, Error>) -> Void) {
-        self.moderations(input: input, model: model, endPoint: .moderations, completion: completion)
+    public func moderationsRequest(input: String, model: ModerationGPTModels = .textModerationStable, completion: @escaping (Result<ModerationsModel, Error>) -> Void) -> URLSessionDataTask? {
+        return self.moderations(input: input, model: model, endPoint: .moderations, completion: completion)
     }
     
     /// Requests text embeddings based on the provided parameters .
@@ -171,13 +171,13 @@ final public class OpenAIAPIManager {
     ///   - user: A unique identifier representing your end-user, which helps OpenAI monitor and detect abuse. Optional parameter.
     ///   - model: The ID of the model to use for creating embeddings. Defaults is .textEmbeddingAda002
     ///   - completion: A completion handler called when the request is completed. Provides the response data, URL response, and error.
-    public  func createEmbeddingsRequest(input: String, user: String? = nil, model: EmbeddingGPTModels = .textEmbeddingAda002, completion: @escaping (Result<EmbeddingModel,Error>) -> Void) {
-        self.embeddingsRequest(input: input, model: model, endPoint: .embeddings, completion: completion)
+    public  func createEmbeddingsRequest(input: String, user: String? = nil, model: EmbeddingGPTModels = .textEmbeddingAda002, completion: @escaping (Result<EmbeddingModel,Error>) -> Void) -> URLSessionDataTask? {
+        return self.embeddingsRequest(input: input, model: model, endPoint: .embeddings, completion: completion)
     }
 
     
     // MARK: - Private Functions -
-    private  func textEditsRequest(endPoint: OpenAIAPIEndpoints, model: EditGPTModels, input: String?, instruction: String, n: Int, temperature: Double, topP: Double, completion: @escaping (Result<[String],Error>) -> Void) {
+    private  func textEditsRequest(endPoint: OpenAIAPIEndpoints, model: EditGPTModels, input: String?, instruction: String, n: Int, temperature: Double, topP: Double, completion: @escaping (Result<[String],Error>) -> Void) -> URLSessionDataTask? {
         
        var parameters: [String: Any] = [
            "instruction":instruction,
@@ -192,10 +192,10 @@ final public class OpenAIAPIManager {
        let requestBuilder = DefaultRequestBuilder()
        guard let request = requestBuilder.buildRequest(params: parameters, endPoint: endPoint, apiKey: apiKey) else {
            completion(.failure(NetworkError.invalidURL))
-           return
+           return nil
        }
        
-       self.performDataTask(with: request) { result in
+       return self.performDataTask(with: request) { result in
            
            switch result {
            case.success(let data):
@@ -216,13 +216,13 @@ final public class OpenAIAPIManager {
            }
        }
     }
-    private func retrieveSingleModel(endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<ChatGPTModel, Error>) -> Void) {
+    private func retrieveSingleModel(endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<ChatGPTModel, Error>) -> Void) -> URLSessionDataTask? {
         let requestBuilder = GetRequestBuilder()
         guard let request = requestBuilder.buildRequest(params: nil, endPoint: endPoint, apiKey: apiKey) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
@@ -242,13 +242,13 @@ final public class OpenAIAPIManager {
         }
     }
     
-    private func getModelsList(endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<ChatGPTModelList, Error>) -> Void) {
+    private func getModelsList(endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<ChatGPTModelList, Error>) -> Void) -> URLSessionDataTask? {
         let requestBuilder = GetRequestBuilder()
         guard let request = requestBuilder.buildRequest(params: nil, endPoint: endPoint, apiKey: apiKey) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
@@ -308,7 +308,7 @@ final public class OpenAIAPIManager {
         
     }
     
-    private func sendTextCompletionRequest(prompt: String, model: ChatGPTModels, maxTokens: Int, n: Int, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<[String], Error>) -> Void)  {
+    private func sendTextCompletionRequest(prompt: String, model: ChatGPTModels, maxTokens: Int, n: Int, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<[String], Error>) -> Void) -> URLSessionDataTask? {
         
         let parameters: [String: Any] = [
             "prompt": prompt,
@@ -320,10 +320,10 @@ final public class OpenAIAPIManager {
         let requestBuilder = DefaultRequestBuilder()
         guard let request = requestBuilder.buildRequest(params: parameters, endPoint: endPoint, apiKey: apiKey) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
@@ -346,7 +346,7 @@ final public class OpenAIAPIManager {
         
     }
     
-    private func generateImageFromText(prompt: String, imageSize: ChatGPTImageSize, responseFormat: ResponseFormat = .url, endPoint: OpenAIAPIEndpoints, n: Int, user: String?, completion: @escaping (Result<[String], Error>) -> Void)  {
+    private func generateImageFromText(prompt: String, imageSize: ChatGPTImageSize, responseFormat: ResponseFormat = .url, endPoint: OpenAIAPIEndpoints, n: Int, user: String?, completion: @escaping (Result<[String], Error>) -> Void) -> URLSessionDataTask? {
         
         var parameters: [String: Any] = [
             "prompt": prompt,
@@ -360,10 +360,10 @@ final public class OpenAIAPIManager {
         let requestBuilder = DefaultRequestBuilder()
         guard let request = requestBuilder.buildRequest(params: parameters, endPoint: endPoint, apiKey: apiKey) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
-        self.performDataTask(with: request, completion: { result in
+        return self.performDataTask(with: request, completion: { result in
             
             switch result {
             case.success(let data):
@@ -386,7 +386,7 @@ final public class OpenAIAPIManager {
         
     }
     
-    private  func editImageRequest(endPoint: OpenAIAPIEndpoints, image: Data, mask: Data? = nil, prompt: String, n: Int?, size: ChatGPTImageSize?, responseFormat: ResponseFormat = .url, user: String?, completion: @escaping (Result<[String],Error>) -> Void) {
+    private  func editImageRequest(endPoint: OpenAIAPIEndpoints, image: Data, mask: Data? = nil, prompt: String, n: Int?, size: ChatGPTImageSize?, responseFormat: ResponseFormat = .url, user: String?, completion: @escaping (Result<[String],Error>) -> Void) -> URLSessionDataTask? {
         
         // Define the key-value pairs
         var parameters: [String: Any] = [
@@ -419,10 +419,10 @@ final public class OpenAIAPIManager {
         }
         guard let request = self.createMultiPartRequest(data: dataArray, fileNames: fileNamesArray, params: parameters, name: "image", contentType: "image/png", endPoint: endPoint) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
@@ -446,7 +446,7 @@ final public class OpenAIAPIManager {
         
         
     }
-    private func imageVariationsRequest(endPoint: OpenAIAPIEndpoints, image: Data, n: Int?,size: ChatGPTImageSize?, responseFormat: ResponseFormat, user: String?, completion: @escaping (Result<[String],Error>) -> Void) {
+    private func imageVariationsRequest(endPoint: OpenAIAPIEndpoints, image: Data, n: Int?,size: ChatGPTImageSize?, responseFormat: ResponseFormat, user: String?, completion: @escaping (Result<[String],Error>) -> Void) -> URLSessionDataTask? {
         // Define the key-value pairs
         var parameters: [String: Any] = [
             "response_format": responseFormat.rawValue
@@ -472,10 +472,10 @@ final public class OpenAIAPIManager {
         
         guard let request = self.createMultiPartRequest(data: dataArray, fileNames: fileNamesArray, params: parameters, name: "image", contentType: "image/png", endPoint: endPoint) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
@@ -498,7 +498,7 @@ final public class OpenAIAPIManager {
         }
     }
     
-    private func audioTranscription(fileUrl: URL, prompt: String? = nil, temperature: Double? = nil, language: String? = nil, model: AudioGPTModels, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<String, Error>) -> Void) {
+    private func audioTranscription(fileUrl: URL, prompt: String? = nil, temperature: Double? = nil, language: String? = nil, model: AudioGPTModels, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<String, Error>) -> Void) -> URLSessionDataTask? {
         
         // Define the key-value pairs
         var parameters: [String: Any] = [
@@ -523,15 +523,15 @@ final public class OpenAIAPIManager {
             audioData = try Data(contentsOf: fileUrl)
         } catch {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
         guard let request = self.createMultiPartRequest(data: [audioData], fileNames: [audioFilename], params: parameters, name: "file", contentType: "audio/wav", endPoint: endPoint) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
@@ -555,7 +555,7 @@ final public class OpenAIAPIManager {
         
     }
     
-    private func audioTranslation(fileUrl: URL, prompt: String? = nil, temperature: Double? = nil, model: AudioGPTModels, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<String, Error>) -> Void) {
+    private func audioTranslation(fileUrl: URL, prompt: String? = nil, temperature: Double? = nil, model: AudioGPTModels, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<String, Error>) -> Void) -> URLSessionDataTask? {
         
         var parameters: [String: Any] = [
             "model": model.rawValue
@@ -574,15 +574,15 @@ final public class OpenAIAPIManager {
             audioData = try Data(contentsOf: fileUrl)
         } catch {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
         guard let request = self.createMultiPartRequest(data: [audioData],fileNames: [audioFilename],params: parameters, name: "file", contentType: "audio/wav", endPoint: endPoint) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
@@ -604,7 +604,7 @@ final public class OpenAIAPIManager {
         }
         
     }
-   private func embeddingsRequest(input: String, user: String? = nil, model: EmbeddingGPTModels, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<EmbeddingModel,Error>) -> Void) {
+   private func embeddingsRequest(input: String, user: String? = nil, model: EmbeddingGPTModels, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<EmbeddingModel,Error>) -> Void) -> URLSessionDataTask? {
        
        var parameters: [String: Any] = [
            "input": input,
@@ -616,10 +616,10 @@ final public class OpenAIAPIManager {
        let requestBuilder = DefaultRequestBuilder()
        guard let request = requestBuilder.buildRequest(params: parameters, endPoint: endPoint, apiKey: apiKey) else {
            completion(.failure(NetworkError.invalidURL))
-           return
+           return nil
        }
        
-       self.performDataTask(with: request) { result in
+       return self.performDataTask(with: request) { result in
            
            switch result {
            case.success(let data):
@@ -639,7 +639,7 @@ final public class OpenAIAPIManager {
            
        }
     }
-    private func moderations(input: String, model: ModerationGPTModels, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<ModerationsModel, Error>) -> Void)  {
+    private func moderations(input: String, model: ModerationGPTModels, endPoint: OpenAIAPIEndpoints, completion: @escaping (Result<ModerationsModel, Error>) -> Void) -> URLSessionDataTask? {
                 
         let parameters: [String: Any] = [
             "input": input,
@@ -649,10 +649,10 @@ final public class OpenAIAPIManager {
         let requestBuilder = DefaultRequestBuilder()
         guard let request = requestBuilder.buildRequest(params: parameters, endPoint: endPoint, apiKey: apiKey) else {
             completion(.failure(NetworkError.invalidURL))
-            return
+            return nil
         }
         
-        self.performDataTask(with: request) { result in
+        return self.performDataTask(with: request) { result in
             
             switch result {
             case.success(let data):
